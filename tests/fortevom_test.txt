@@ -1,0 +1,33 @@
+
+i32 weight = 46;
+
+infer number = 96;
+
+
+° This is a comment
+
+
+write_output(“hi");
+
+read_stdin();
+
+if condition then 
+  ° ...
+alternatively condition then
+  ° ...
+otherwise do 
+   ° ...
+end
+
+
+while condition do
+  ° stuff
+end
+
+for let int i = 0, condition, i++ do
+  ° stuff
+end
+
+for thing in things do 
+  ° stuff
+end 
