@@ -100,6 +100,14 @@ fn someFUNCTION(string argument, bool argumentTWO) => string:
 end
 ```
 
+If you want any type of argument, then you can use the type `any`:
+
+```
+fn someFUNCTION(any argument, any argumentTWO) => string:
+  <logic>
+end
+```
+
 Types
 
 Here is the list of types available in Fortevom:
@@ -110,6 +118,7 @@ Here is the list of types available in Fortevom:
 - string
 - char
 - obj
+- any/inferred
 
 Loops:
 
