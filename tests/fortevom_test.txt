@@ -1,10 +1,10 @@
 
-i32 weight = 46;
+int weight = 46;
 
 infer number = 96;
 
 
-° This is a comment
+° This is a comment;
 
 
 write_output(“hi");
@@ -23,7 +23,7 @@ while condition do
   ° stuff
 end
 
-for let int i = 0, condition, i++ do
+for let int i = 0, i < 3, i++ do
   ° stuff
 end
 

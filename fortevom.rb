@@ -21,24 +21,39 @@ end
 
 def orchestrate file, output_language
   parser           = Parser.new()
-  file_to_write_to = output_language == "php" ? file.sub!(".fortevom", ".php") : file.sub!(".fortevom", ".cs")
-  lines            = getLines file_given
+  file_to_write_to = output_language == "php" ? file.sub(".fortevom", ".php") : file.sub(".fortevom", ".cs")
+  lines            = getLines file
 
   lines.each do |line|
-  if line == ' '
-    snippets << line
-  end
+    if line == ' '
+      snippets << line
+    end
 
 
-  expression = getExpression line
-  token      = lex expression
-  snippet    = parser.parse token, output_language
+    expressions = getExpressions line
 
-  write snippet, file_to_write_to
 
-  puts "Perfect! Your new file is named #{file_to_write_to}."
+    # puts "expressions:"
+    # expressions.each {|expression| puts expression}
+
+    expressions.each do |expression|
+      next if expression == " "
+      token      = lex expression
+      
+      # puts "token:"
+      # pp token
+
+      snippet    = parser.parse token, output_language
+
+      puts "snippet:"
+      pp snippet
+
+      # write snippet, file_to_write_to
+    end
   end
 end
 
 orchestrate file_given, output_language
+puts "Perfect! Your new file is named <placeholder>."
+
 

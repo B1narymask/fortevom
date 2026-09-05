@@ -1,5 +1,5 @@
 
-def phpGenerateComment content
+def phpGenerateComment comment
   <<-END
     // #{comment}
   END

@@ -118,6 +118,10 @@ def lex expression
       exception: $~[:exception_type],
       name: $~[:name]
     }
+  else
+    {
+      type: :blank_line
+    }
   end
 end
 
