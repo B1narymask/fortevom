@@ -90,21 +90,18 @@ def lex expression
       type: :import,
       package: $~[:package]
     }
-  when /import\s+(?<package>.*)\s+as\s+/
+  when /from\s+(?<package>.*)\s+import\s+(?<thing>.*)/
     {
       type: :import_as,
-      package: $~[:package]
+      package: $~[:package],
+      thing: $~[:thing]
     }
-  when /(?<variable>.*)\.(?<method>.*)$/
+  when /(?<variable>.*)\.(?<method>.*)\((?<arguments>.*)\)$/
     {
       type: :method,
       variable: $~[:variable],
-      method: $~[:method]
-    }
-  when /obj\s+(?<variable_name>.*)\s+=\s+\{/
-    {
-      type: :object_declaration,
-      name: $~[:variable_name]
+      method: $~[:method],
+      arguments: $~[:arguments]
     }
   when /attempt:/
     {
@@ -122,6 +119,10 @@ def lex expression
       name: $~[:name]
     }
   end
+end
+
+def lexMethod method
+  
 end
 
 # debug

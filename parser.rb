@@ -7,6 +7,7 @@ class Parser
     @insideConditional = false
     @insideLoop        = false
     @insideAttempt     = false
+    @recognized_types  = %w|uint int boolean float string char obj any|
   end
   
   # the separation of power is kinda fucked because the lexer is almost a parser
@@ -15,8 +16,6 @@ class Parser
   # this will need to be refactored to support nesting
 
   def parse token, output_language
-    fail "The given language will not work: #{output_language}" unless %w|cs php|.include?(output_language)
-      
     # refactor every other function call to use send()
     # remember to turn =/= into !=
 
@@ -24,6 +23,8 @@ class Parser
     when "comment"
       return send("#{output_language}GenerateComment", token[:comment])
     when "variable_creation"
+      fail "Invalid type assigned to #{token[:name]}: #{token[:var_type]}" unless @recognized_types.include?(token[:var_type])
+
       return csGenerateVariable token[:var_type], token[:name], token[:value]
     when "if_condition"
       newCondition = lex token[:condition] # incase they embedded Fortevom syntax into the condition
@@ -59,7 +60,7 @@ class Parser
       return csGenerateImportFrom token[:package], token[:thing]
     when "method"
       newMethod = lexMethod token[:method]
-      return csGenerateMethod token[:variable], newMethod
+      return csGenerateMethod token[:variable], newMethod, token[:arguments]
     when "open_attempt_block"
       return csGenerateAttempt
     when "unnamed_when_arm"
