@@ -5,15 +5,12 @@ require_relative "lexer"
 
 class Parser
   def initialize
-    @insideConditional = false
-    @insideLoop        = false
-    @insideAttempt     = false
     @recognized_types  = %w|uint int boolean float string char obj any|
   end
   
   # this will need to be refactored to support nesting
 
-  def parse token, output_language
+  def parse token, output_language, line_number
     # refactor every other function call to use send()
     # remember to turn =/= into !=
 
@@ -26,50 +23,60 @@ class Parser
     when :comment
       return send("#{output_language}GenerateComment", token[:comment])
     when "variable_creation"
-      fail "Invalid type assigned to #{token[:name]}: #{token[:var_type]}" unless @recognized_types.include?(token[:var_type])
+      fail "Invalid type assigned to #{token[:name]}: #{token[:var_type]} on line ~#{line_number}" unless @recognized_types.include?(token[:var_type])
 
       return send("#{output_language}GenerateVariable", token[:var_type], token[:name], token[:value])
+
     when :if_condition
-      newCondition = lex token[:condition] # incase they embedded Fortevom syntax into the condition
-      return csGenerateIf newCondition
+      return send("#{output_language}GenerateIf", token[:condition])
+
     when "alternative_condition"
-      @insideConditional or raise "Unexpected alternative clause: you are not inside a conditonal."
-      newCondition = lex token[:condition]
-      return csGenerateElseIf newCondition
+      return send("#{output_language}GenerateElseIf", token[:condition])
+
     when :otherwise_condition
-      @insideConditional or raise "Unexpected otherwise clause: you are not inside a conditonal."
-      return csGenerateElse
+      return send("#{output_language}GenerateElse")
+
     when :end
-      fail "Unexpected end; there are no conditionals or loops to close." unless @insideConditional || @insideLoop || @insideAttempt
-      @insideConditional = false if @insideConditional
-      @insideLoop        = false if @insideLoop
-      @insideAttempt     = false if @insideAttempt
-      return csGenerateEnd
+      return send("#{output_language}GenerateEnd")
+
     when :inferred_variable_creation
-      return csGenerateInferredVariable token[:name], token[:value]
+      return send("#{output_language}GenerateInferredVariable", token[:name], token[:value])
+
     when :function_call
-      return csGenerateFunctionCall token[:function_name], token[:arguments]
+      return send("#{output_language}GenerateFunctionCall", token[:function_name], token[:arguments])
+
     when :function_declaration
-      return csGenerateFunctionDeclaration token [:function_name], token[:arguments]
+      return send("#{output_language}GenerateFunctionDeclaration", token [:function_name], token[:arguments])
+
     when :while_loop
-      return csGenerateWhileLoop token[:condition]
+      return send("#{output_language}GenerateWhileLoop", token[:condition])
+
     when :for_loop
-      return csGenerateForLoop token[:initialization], token[:condition], token[:update]
+      return send("#{output_language}GenerateForLoop", token[:condition], token[:update])
+
     when :foreach_loop
-      return csGenerateForeachLoop token[:iterator], token[:array]
+      return send("#{output_language}GenerateForeachLoop", token[:iterator], token[:array])
+
     when :import
-      return csGenerateImport token[:package]
+      return send("#{output_language}GenerateImport", token[:package])
+
     when :import_as
       return csGenerateImportFrom token[:package], token[:thing]
+
+
     when :method
       newMethod = lexMethod token[:method]
       return csGenerateMethod token[:variable], newMethod, token[:arguments]
+
     when :open_attempt_block
       return csGenerateAttempt
+
     when :unnamed_when_arm
       return csGenerateCatchException token[:exception]
+
     when :named_when_arm
       return csGenerateNamedException token[:exception], token[:name]
+
     else
       return "\n"
     end

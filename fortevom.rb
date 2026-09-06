@@ -8,7 +8,8 @@ raise "You must provide a file"             if file_given.nil?
 raise "You must provide an output language" if output_language.nil?
 
 unless %w|cs php|.include?(output_language)
-  raise "Invalid output language provided. Only use 'cs' to output C# or 'php' to output PHP."
+  puts "Invalid output language provided. Only use 'cs' to output C# or 'php' to output PHP."
+  exit
 end
 
 def write snippet, file_to_write_to
@@ -23,27 +24,28 @@ def orchestrate file, output_language
   parser           = Parser.new()
   file_to_write_to = output_language == "php" ? file.sub(".fortevom", ".php") : file.sub(".fortevom", ".cs")
   lines            = getLines file
+  line_number      = 0 # a rough approximate because it will be skewed if you have multiple expressions on one line
 
   lines.each do |line|
+    line_number += 1
     if line == ' '
       snippets << line
     end
 
-
     expressions = getExpressions line
-
 
     # puts "expressions:"
     # expressions.each {|expression| puts expression}
 
     expressions.each do |expression|
       next if expression == " "
-      token      = lex expression
+      token = lex expression
       
       # puts "token:"
       # pp token
 
-      snippet    = parser.parse token, output_language
+
+      snippet = parser.parse token, output_language, line_number
 
       puts "snippet:"
       pp snippet
