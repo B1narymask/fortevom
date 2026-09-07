@@ -24,6 +24,13 @@ def lex expression
       type: :comment,
       comment: $~[:comment]
     }
+  when /for\s+let\s+(?<initialization>.*)\,(?<condition>.*)\,(?<update>.*)\s+do/
+    {
+      type: :for_loop,
+      initialization: $~[:initialization],
+      condition: $~[:condition],
+      update: $~[:update]
+    }
   when /(?<type>(boolean|int|uint|string|char))\s+(?<var_name>.*)\s=\s(?<value>.*)\Z/
     {
       type: :variable_creation,
@@ -71,13 +78,6 @@ def lex expression
     {
       type: :while_loop,
       condition: $~[:condition]
-    }
-  when /for\s+(?<initialization>.*)\,(?<condition>.*)\,(?<update>.*)\s+do/
-    {
-      type: :for_loop,
-      initialization: $~[:initialization],
-      condition: $~[:condition],
-      update: $~[:update]
     }
   when /for\s+(?<iterator>.*)\s+in\s+(?<array>.*)\s+do/
     {

@@ -44,8 +44,9 @@ end
 
 def phpGenerateFunctionCall name, arguments
   # check if its a fortevom function like write_output() or read_stdin()
-  return "echo '#{arguments}'" if name == "write_output"
+  return "echo #{arguments}"   if name == "write_output"
   return "readline()"          if name == "read_stdin"
+
   <<-END
   #{name}(#{arguments})
   END
@@ -70,14 +71,17 @@ def phpGenerateWhileLoop condition
 end
 
 def phpGenerateForLoop initialization, condition, update
+  # NEEDS TESTING
   <<-END
-  for ($#{initialization}; $#{condition}; $#{update}) {
+  $#{initialization};
+  while ($#{condition}) {
+    $#{update}
   END
 end
 
 def phpGenerateForeachLoop iterator, array
   <<-END
-  foreach ($#{array} as $#{iterator})
+  foreach ($#{array} as $#{iterator}) {
   END
 end
 

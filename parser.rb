@@ -14,9 +14,9 @@ class Parser
     # refactor every other function call to use send()
     # remember to turn =/= into !=
 
-    puts "DEBUG:"
-    pp token
-    puts token[:type]
+    # puts "DEBUG:"
+    # pp token
+    # puts token[:type]
 
 
     snippet = case token[:type]
@@ -52,7 +52,8 @@ class Parser
       return send("#{output_language}GenerateWhileLoop", token[:condition])
 
     when :for_loop
-      return send("#{output_language}GenerateForLoop", token[:condition], token[:update])
+      puts "CALLING FOR LOOP FUNCTION IN PARSER"
+      return send("#{output_language}GenerateForLoop", token[:initialization], token[:condition], token[:update])
 
     when :foreach_loop
       return send("#{output_language}GenerateForeachLoop", token[:iterator], token[:array])

@@ -7,7 +7,7 @@ infer number = 96;
 ° This is a comment;
 
 
-write_output(“hi");
+write_output("hi");
 
 read_stdin();
 
