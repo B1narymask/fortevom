@@ -22,7 +22,7 @@ class Parser
     snippet = case token[:type]
     when :comment
       return send("#{output_language}GenerateComment", token[:comment])
-    when "variable_creation"
+    when :variable_creation
       fail "Invalid type assigned to #{token[:name]}: #{token[:var_type]} on line ~#{line_number}" unless @recognized_types.include?(token[:var_type])
 
       return send("#{output_language}GenerateVariable", token[:var_type], token[:name], token[:value])
@@ -30,7 +30,7 @@ class Parser
     when :if_condition
       return send("#{output_language}GenerateIf", token[:condition])
 
-    when "alternative_condition"
+    when :alternative_condition
       return send("#{output_language}GenerateElseIf", token[:condition])
 
     when :otherwise_condition
@@ -52,7 +52,6 @@ class Parser
       return send("#{output_language}GenerateWhileLoop", token[:condition])
 
     when :for_loop
-      puts "CALLING FOR LOOP FUNCTION IN PARSER"
       return send("#{output_language}GenerateForLoop", token[:initialization], token[:condition], token[:update])
 
     when :foreach_loop

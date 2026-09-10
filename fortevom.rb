@@ -10,8 +10,15 @@ unless %w|lex parse compile transpile render digest|.include?(command)
     puts "Looks like you forgot to add a command. Remember to include a command before your directory like 'compile'."
     exit
   end
-  puts "Invalid command: #{command}"
-  exit
+  
+  if command == nil || command == ''
+    puts "You must provide a command."
+    exit
+  else
+    puts "Invalid command: #{command}"
+    exit
+  end
+
 end
 
 raise "You must provide a file"             if file_given.nil?
@@ -63,7 +70,6 @@ def compile file, output_language
       # puts "token:"
       # pp token
 
-
       snippet = parser.parse token, output_language, line_number
 
       # puts "snippet:"
@@ -83,17 +89,47 @@ def onlyLex file
     tokens << token
   end
   
-  puts "DEBUG: TOKEN OUTPUT OF #{file}"
-  tokens.each {|token| puts token}
+  puts "TOKEN OUTPUT OF #{file}:"
+  tokens.each { |token| puts token }
 end
 
 def onlyParse file, language
-  
+  lines = getLines(file)
+  tokens = []
+  lines.each do |line|
+    token = lex line
+    tokens << token
+  end
+
+  line_number = 1
+  snippets = []
+
+  tokens.each do |token|
+    snippet = parse token, language, line_number
+    snippets << snippet
+    line_number += 1
+  end
+
+  puts "CODE SNIPPETS GENERATED FROM #{file} IN #{language}:"
+  snippets.each { |snippet| puts snippet }
 end
 
 
 def orchestrate file_given, output_language
   output_file = compile file_given, output_language
+
+  unless File.zero?(output_file)
+    puts <<~END
+      Notice:
+      It looks like your output file may already have text in it.
+      Sadly, Fortevom has a problem where it will append to the bottom of files instead of overwriting them.
+      It is recommended that you delete your file before compiling.
+
+      I apologize for the inconvenience - Centurion
+    END
+    return
+  end
+
   puts "Perfect! Your new file is named #{output_file}."
 end
 
